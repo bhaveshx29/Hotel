@@ -1,6 +1,8 @@
 package org.bhavesh.gui;
 
 import javax.swing.*;
+import org.bhavesh.gui.RoomPanel;
+import org.bhavesh.gui.ReservationPanel;
 
 public class MainFrame extends JFrame {
     public MainFrame() {
