@@ -3,52 +3,67 @@ package org.bhavesh.dao;
 import org.bhavesh.model.Employee;
 import org.bhavesh.utility.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 public class EmployeeDAO {
-    
-    // Add new employee
-    public boolean addEmployee(Employee employee) throws SQLException {
-        String sql = "INSERT INTO employees (name, email, phone, position, hire_date, user_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, employee.getName());
-            stmt.setString(2, employee.getEmail());
-            stmt.setString(3, employee.getPhone());
-            stmt.setString(4, employee.getPosition());
-            stmt.setDate(5, java.sql.Date.valueOf(employee.getHireDate()));
-            stmt.setInt(6, employee.getUserId());
-            
-            return stmt.executeUpdate() > 0;
-        }
+    private Connection connection;
+
+    public EmployeeDAO() {
+        this.connection = DatabaseConnection.getConnection();
     }
-    
-    // Get employee by user ID
-    public Employee getEmployeeByUserId(int userId) throws SQLException {
-        String sql = "SELECT * FROM employees WHERE user_id = ?";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, userId);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Employee(
-                        rs.getInt("employee_id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("phone"),
-                        rs.getString("position"),
-                        rs.getDate("hire_date").toLocalDate(),
-                        rs.getInt("user_id")
-                    );
-                }
+
+    public int addEmployee(Employee employee) {
+        String query = "INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?)";
+        int generatedId = -1;
+        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, employee.getName());
+            statement.setString(2, "default123");
+            statement.setString(3, employee.getRole());
+            statement.setString(4, employee.getName());
+            statement.executeUpdate();
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                generatedId = resultSet.getInt(1);
+                employee.setEmployeeId(generatedId);
             }
+        } catch (SQLException e) {
+            System.out.println("Error adding employee: " + e.getMessage());
         }
-        return null;
+        return generatedId;
+    }
+
+    public ArrayList<Employee> getAllEmployees() {
+        ArrayList<Employee> employees = new ArrayList<>();
+        String query = "SELECT * FROM users WHERE role IN ('MANAGER', 'RECEPTIONIST')";
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Employee employee = new Employee(
+                        resultSet.getInt("user_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("role")
+                );
+                employees.add(employee);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching employees: " + e.getMessage());
+        }
+        return employees;
+    }
+
+    public void deleteEmployee(int employeeId) {
+        String query = "DELETE FROM users WHERE user_id = ? AND role IN ('MANAGER', 'RECEPTIONIST')";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, employeeId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting employee: " + e.getMessage());
+        }
     }
 }

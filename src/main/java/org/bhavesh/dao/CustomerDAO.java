@@ -1,39 +1,78 @@
 package org.bhavesh.dao;
 
-
 import org.bhavesh.model.Customer;
 import org.bhavesh.utility.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CustomerDAO {
-    public void addCustomer(Customer customer) throws SQLException {
-        String sql = "INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, customer.getName());
-            stmt.setString(2, customer.getEmail());
-            stmt.setString(3, customer.getPhone());
-            stmt.executeUpdate();
-        }
+    private Connection connection;
+
+    public CustomerDAO() {
+        this.connection = DatabaseConnection.getConnection();
     }
 
-    public List<Customer> getAllCustomers() throws SQLException {
-        List<Customer> customers = new ArrayList<>();
-        String sql = "SELECT * FROM customers";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Customer customer = new Customer();
-                customer.setCustomerId(rs.getInt("customer_id"));
-                customer.setName(rs.getString("name"));
-                customer.setEmail(rs.getString("email"));
-                customer.setPhone(rs.getString("phone"));
+    public int addCustomer(Customer customer) {
+        String query = "INSERT INTO customers (name, email, phone) VALUES (?, ?, ?)";
+        int generatedId = -1;
+        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, customer.getName());
+            statement.setString(2, customer.getEmail());
+            statement.setString(3, customer.getPhone());
+            statement.executeUpdate();
+
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                generatedId = resultSet.getInt(1);
+                customer.setCustomerId(generatedId);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error adding customer: " + e.getMessage());
+        }
+        return generatedId;
+    }
+
+    public Customer getCustomerById(int customerId) {
+        String query = "SELECT * FROM customers WHERE customer_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, customerId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return new Customer(
+                        resultSet.getInt("customer_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("phone")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching customer: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public ArrayList<Customer> getAllCustomers() {
+        ArrayList<Customer> customers = new ArrayList<>();
+        String query = "SELECT * FROM customers";
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Customer customer = new Customer(
+                        resultSet.getInt("customer_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("phone")
+                );
                 customers.add(customer);
             }
+        } catch (SQLException e) {
+            System.out.println("Error fetching customers: " + e.getMessage());
         }
         return customers;
     }
