@@ -15,83 +15,67 @@ public class ReceptionFrame extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Define the color scheme
-        Color backgroundColor = new Color(46, 46, 46); // Dark gray (#2E2E2E)
-        Color textColor = new Color(211, 211, 211); // Light gray (#D3D3D3)
-        Color buttonColor = new Color(0, 196, 180); // Cyan (#00C4B4)
+        // Define color scheme
+        Color backgroundColor = new Color(46, 46, 46);
+        Color textColor = new Color(211, 211, 211);
+        Color buttonColor = new Color(0, 196, 180);
 
-        // Main Panel
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(backgroundColor);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Title
         JLabel titleLabel = new JLabel("RECEPTION", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Roboto", Font.BOLD, 32));
         titleLabel.setForeground(textColor);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Menu Panel (Left Side)
         JPanel menuPanel = new JPanel(new GridBagLayout());
         menuPanel.setBackground(backgroundColor);
-        menuPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         menuPanel.setPreferredSize(new Dimension(250, 0));
-
+        
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 0, 10, 0); // Padding between buttons
+        gbc.insets = new Insets(10, 0, 10, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
 
-        // Receptionist functionalities
         JButton newCustomerButton = new JButton("New Customer Form");
         styleButton(newCustomerButton, buttonColor);
-        newCustomerButton.addActionListener(e -> {
-            NewCustomerFrame newCustomerFrame = new NewCustomerFrame();
-            newCustomerFrame.setVisible(true);
-        });
+        newCustomerButton.addActionListener(e -> new NewCustomerFrame().setVisible(true));
         gbc.gridy = 0;
         menuPanel.add(newCustomerButton, gbc);
 
         JButton customerInfoButton = new JButton("Customer Info");
         styleButton(customerInfoButton, buttonColor);
-        customerInfoButton.addActionListener(e -> {
-            CustomerInfoFrame customerInfoFrame = new CustomerInfoFrame();
-            customerInfoFrame.setVisible(true);
-        });
+        customerInfoButton.addActionListener(e -> new CustomerInfoFrame().setVisible(true));
         gbc.gridy = 1;
         menuPanel.add(customerInfoButton, gbc);
 
         JButton checkOutButton = new JButton("Check Out");
         styleButton(checkOutButton, buttonColor);
-        checkOutButton.addActionListener(e -> {
-            CheckOutFrame checkOutFrame = new CheckOutFrame();
-            checkOutFrame.setVisible(true);
-        });
+        checkOutButton.addActionListener(e -> new CheckOutFrame().setVisible(true));
         gbc.gridy = 2;
         menuPanel.add(checkOutButton, gbc);
 
         JButton pickupServiceButton = new JButton("Pickup Service");
         styleButton(pickupServiceButton, buttonColor);
-        pickupServiceButton.addActionListener(e -> {
-            PickupServiceFrame pickupServiceFrame = new PickupServiceFrame();
-            pickupServiceFrame.setVisible(true);
-        });
+        pickupServiceButton.addActionListener(e -> new PickupServiceFrame().setVisible(true));
         gbc.gridy = 3;
         menuPanel.add(pickupServiceButton, gbc);
 
         JButton pickupInfoButton = new JButton("Pickup Info");
         styleButton(pickupInfoButton, buttonColor);
-        pickupInfoButton.addActionListener(e -> {
-            PickupInfoFrame pickupInfoFrame = new PickupInfoFrame();
-            pickupInfoFrame.setVisible(true);
-        });
+        pickupInfoButton.addActionListener(e -> new PickupInfoFrame().setVisible(true));
         gbc.gridy = 4;
         menuPanel.add(pickupInfoButton, gbc);
 
+        JButton roomManagementButton = new JButton("Room Management");
+        styleButton(roomManagementButton, buttonColor);
+        roomManagementButton.addActionListener(e -> new RoomManagement().setVisible(true));
+        gbc.gridy = 5;
+        menuPanel.add(roomManagementButton, gbc);
+
         mainPanel.add(menuPanel, BorderLayout.WEST);
 
-        // Image Panel (Right Side)
         JPanel imagePanel = new JPanel(new BorderLayout());
         imagePanel.setBackground(backgroundColor);
 
@@ -107,31 +91,24 @@ public class ReceptionFrame extends JFrame {
             errorLabel.setFont(new Font("Roboto", Font.BOLD, 24));
             errorLabel.setForeground(textColor);
             imagePanel.add(errorLabel, BorderLayout.CENTER);
-            System.out.println("Error loading image: " + e.getMessage());
         }
 
         mainPanel.add(imagePanel, BorderLayout.CENTER);
 
-        // Bottom Panel (Logout Button)
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         bottomPanel.setBackground(backgroundColor);
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         JButton logoutButton = new JButton("Logout");
         styleButton(logoutButton, buttonColor);
         logoutButton.addActionListener(e -> {
             dispose();
-            LoginFrame loginFrame = new LoginFrame();
-            loginFrame.setVisible(true);
+            new LoginFrame().setVisible(true);
         });
         bottomPanel.add(logoutButton);
 
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
-
-        // Set the frame background
-        getContentPane().setBackground(backgroundColor);
     }
 
     private void styleButton(JButton button, Color color) {
