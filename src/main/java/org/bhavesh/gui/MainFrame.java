@@ -38,8 +38,8 @@ public class MainFrame extends JFrame {
         };
         menuPanel.setOpaque(false);
         menuPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(0, 0, 0, 50)),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
+                BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(0, 0, 0, 50)),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
         menuPanel.setPreferredSize(new Dimension(400, 0));
 

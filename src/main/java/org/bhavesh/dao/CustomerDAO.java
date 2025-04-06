@@ -76,4 +76,20 @@ public class CustomerDAO {
         }
         return customers;
     }
+
+    public static void submitFeedback(int customerId, String feedbackText) {
+        String query = "INSERT INTO feedback (customer_id, feedback_text) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, customerId);
+            stmt.setString(2, feedbackText);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

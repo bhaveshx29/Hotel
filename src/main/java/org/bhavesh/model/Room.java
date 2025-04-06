@@ -5,6 +5,7 @@ public class Room {
     private String roomType;     // Corresponds to room_type
     private double pricePerNight; // Corresponds to price_per_night
     private boolean availability; // Corresponds to availability
+    private int quantity;
 
     // Constructor
     public Room(int roomId, String roomType, double pricePerNight, boolean availability) {
@@ -12,6 +13,7 @@ public class Room {
         this.roomType = roomType;
         this.pricePerNight = pricePerNight;
         this.availability = availability;
+        this.quantity = quantity;
     }
 
     // Getters and Setters
@@ -46,6 +48,15 @@ public class Room {
     public void setAvailability(boolean availability) {
         this.availability = availability;
     }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int capacity) {
+        this.quantity = capacity;
+    }
+
 
     // toString method for debugging
     @Override
